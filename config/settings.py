@@ -23,6 +23,7 @@ class Settings:
     INPUT_DIR = os.path.join(DATA_DIR, 'input')
     OUTPUT_DIR = os.path.join(DATA_DIR, 'output')
     MAPPINGS_DIR = os.path.join(OUTPUT_DIR, 'mappings')
+    CLASSIFICATIONS_DIR = os.path.join(OUTPUT_DIR, 'classifications')
     
     @classmethod
     def validate(cls):

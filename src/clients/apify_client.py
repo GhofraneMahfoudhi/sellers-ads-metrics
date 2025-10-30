@@ -98,6 +98,79 @@ class ApifyFacebookAdsClient:
         except Exception as e:
             logger.error(f"❌ Erreur lors de la collecte: {str(e)}")
             raise
+
+
+    def get_all_ads_by_page_id(
+        self, 
+        page_id: str,
+        country: str = None
+    ) -> List[Dict[str, Any]]:
+        """
+        Récupérer TOUTES les publicités d'une page Facebook
+        (Utilisé en Phase 2)
+        
+        Args:
+            page_id: ID de la page Facebook
+            country: Code pays
+            
+        Returns:
+            Liste de TOUTES les publicités de cette page
+        """
+        country = country or settings.DEFAULT_COUNTRY
+        
+        logger.info(f"🔍 Récupération de TOUTES les ads de la page: {page_id}")
+        
+        try:
+            # URL pour rechercher par page ID
+            meta_url = (
+                f"https://www.facebook.com/ads/library/"
+                f"?active_status=all"
+                f"&ad_type=all"
+                f"&country={country}"
+                f"&view_all_page_id={page_id}"
+                f"&search_type=page"
+                f"&media_type=all"
+            )
+            
+            run_input = {
+                "urls": [{"url": meta_url}],
+                "count": 9999,
+                "period": "",
+                "scrapePageAds.activeStatus": "all",
+                "scrapePageAds.countryCode": "ALL",
+                "proxyConfiguration": {"useApifyProxy": True}
+            }
+            
+            logger.debug(f"URL: {meta_url}")
+            logger.info("🚀 Lancement de l'Actor...")
+            
+            run = self.client.actor(self.actor_id).call(run_input=run_input)
+            
+            ads = []
+            dataset_id = run.get("defaultDatasetId")
+            
+            if not dataset_id:
+                logger.warning("⚠️  Aucun dataset retourné")
+                return []
+            
+            item_count = 0
+            for item in self.client.dataset(dataset_id).iterate_items():
+                # Filtrer pour ne garder que les ads de cette page
+                if str(item.get('page_id')) == str(page_id):
+                    ads.append(item)
+                    item_count += 1
+                    
+                    if item_count % 50 == 0:
+                        logger.info(f"  → {item_count} publicités...")
+            
+            logger.info(f"✅ TOTAL: {len(ads)} publicités de la page")
+            
+            return ads
+            
+        except Exception as e:
+            logger.error(f"❌ Erreur: {str(e)}")
+            raise
+        
     
     def _build_meta_ad_library_url(
         self, 
@@ -156,3 +229,5 @@ class ApifyFacebookAdsClient:
         except Exception as e:
             logger.error(f"❌ Échec de connexion: {str(e)}")
             return False
+        
+    
