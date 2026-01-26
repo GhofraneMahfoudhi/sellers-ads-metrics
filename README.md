@@ -20,7 +20,7 @@ Le système repose sur une **architecture bi-phasée** :
 ### 📍 Phase 1 : Discovery & Mapping
 - **Scraping automatisé** via Apify Meta Ad Library Actor
 - **Classification activité** : Actifs (avec publicités) vs Inactifs (sans publicités)
-- **Tracking des coûts** en temps réel (budget $5 Apify freemium puis passage au plan premium de 39$/mois)
+- **Tracking des coûts** en temps réel (budget 5 euros Apify freemium puis passage au plan premium de 39 euros mois)
 - **Résultat** : 4343 clients traités (20%)
 
 ### 🎯 Phase 2 : Classification Intelligence
